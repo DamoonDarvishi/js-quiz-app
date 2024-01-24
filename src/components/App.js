@@ -7,6 +7,8 @@ import HomeScreen from "./HomeScreen";
 import Question from "./Question";
 import "../App.css";
 import NextButton from "./NextButton";
+import Progress from "./Progress";
+import FinishScreen from "./FinishScreen";
 
 const initialState = {
   questions: [],
@@ -37,6 +39,8 @@ function reducer(state, action) {
       };
     case "NEXT_QUESTION":
       return { ...state, index: state.index + 1, answer: null };
+    case "FINISH":
+      return { ...state, status: "finished" };
     default:
       break;
   }
@@ -44,9 +48,13 @@ function reducer(state, action) {
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { questions, status, index, answer } = state;
+  const { questions, status, index, answer, points } = state;
   const numQuestions = questions.length;
-  // console.log(state);
+  const maxPossiblePoints = questions.reduce(
+    (prev, cur) => prev + cur.points,
+    0
+  );
+
   useEffect(function () {
     fetch("http://localhost:9000/questions")
       .then((res) => res.json())
@@ -56,7 +64,7 @@ function App() {
   return (
     <div className="app">
       <Header />
-      {/* <DateCounter /> */}
+
       <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
@@ -65,13 +73,28 @@ function App() {
         )}
         {status === "active" && (
           <>
+            <Progress
+              index={index}
+              numQuestion={numQuestions}
+              points={points}
+              answer={answer}
+              maxPossiblePoints={maxPossiblePoints}
+            />
             <Question
               question={questions[index]}
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              numQuestions={numQuestions}
+            />
           </>
+        )}
+        {status === "finished" && (
+          <FinishScreen points={points} maxPossiblePoints={maxPossiblePoints} />
         )}
       </Main>
     </div>
