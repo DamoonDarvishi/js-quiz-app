@@ -1,6 +1,6 @@
 import React from "react";
 
-function HomeScreen({ numQuestions, dispatch }) {
+function StartScreen({ numQuestions, dispatch }) {
   return (
     <div className="start">
       <h2>Welcome to the Javascript Quiz!</h2>
@@ -15,4 +15,4 @@ function HomeScreen({ numQuestions, dispatch }) {
   );
 }
 
-export default HomeScreen;
+export default StartScreen;
